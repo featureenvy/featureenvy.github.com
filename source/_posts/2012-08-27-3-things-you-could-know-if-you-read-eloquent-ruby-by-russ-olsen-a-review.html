@@ -1,0 +1,60 @@
+---
+layout: post
+title: ! '3 Things You Could Know If You Read "Eloquent Ruby" by Russ Olsen: A Review'
+tags:
+- Book Review
+- dsl
+- modules
+- ruby
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _genesis_title: 3 Things You Could Know If You Read &quot;Eloquent Ruby&quot; by
+    Russ Olsen. A Eloquent Ruby Review
+  _clicky_goal: a:2:{s:2:"id";s:0:"";s:5:"value";s:0:"";}
+---
+Starting with Ruby isn't easy. Especially if you are like me. I have, like many before me, a Java background. So I knew statically typed languages, I knew what it meant, I knew what its strength were.
+
+And, like the monkey that I was, I thought statically typed languages were the best! Why? IDEs have a really easy time to refactor a lot of code. Everything was clear. Well, you know, the standard arguments you probably also here when we talk about statically typed languages.
+
+But this post has nothing to do with statically typed languages, with me having seen the light at the of the tunnel and all that. And since you are reading this, I guess you did the same!
+
+But, fun fact, here, for free, no sign-up needed: Ruby can do a lot more. A lot! And it has it warts, and it has its way of doing things. This isn't easy to understand when you are knew, or even when you are experienced.
+
+So here are 3 tips on what you could learn from reading <a href="http://www.amazon.com/gp/product/0321584104/ref=as_li_ss_tl?ie=UTF8&camp=1789&creative=390957&creativeASIN=0321584104&linkCode=as2&tag=thecode00-20" title="Eloquent Ruby" target="_blank">Eloquent Ruby</a> by <a href="https://twitter.com/russolsen" title="Russ Olsen on Twitter" target="_blank">Russ Olsen</a>:
+
+<h2>Strings In Ruby Are Awesome! Literally!</h2>
+Ever had to write a string in Java? I feel sorry for you, because I have written way too many back in the days. Remember  <span class="lang:java decode:true  crayon-inline " >"This is a \"String\""</span> or even better, a Regex? (Hint:  <span class="lang:java decode:true  crayon-inline " >"\\..*"</span>, and yes, that's basically a smiley. That's also my theory that smilies are a result of Java programmers using Regex).
+
+The first string problem is easy to solve in Ruby: Just use a single quote! But even better, if you mix single and double quotes in a sentence ("And here shall "REST" Java. It's done.") we can solve this with a string literal: <span class="lang:ruby decode:true  crayon-inline " >%q{And here shall "REST" Java. It's done.}</span>. See? No problem. In fact, we could even replace { with '$', since we never use a '$' in our sentence! Or a lot of other special characters for that matter.
+
+The Regex (<a href="http://googlefight.com/index.php?lang=en_GB&word1=regex&word2=regexp#" title="Google Fight Regex(p)" target="_blank">or Regexp</a>?) we could write as <span class="lang:ruby decode:true  crayon-inline " >/\..*/</span>. No double escaping needed! And yes, it still resembles a smiley, I realize that. It's still a Regex after all!
+
+There is a lot more that can be done with string literals, so you should check that out in the book!
+
+<h2>Ruby Has Hooks For A Lot Of Things</h2>
+Ever written a module? Imagine that you are that module. This is carry stuff! Just think about it: You have to blindly stumble around, never knowing which class carries you around!
+
+Luckily, Ruby offers us hooks that we can use to alleviate these problems. Each module has a <span class="lang:ruby decode:true  crayon-inline " >self.included</span> method that you can use. It is called every time a class, well, includes this module. Even better, it even tells you which class it was!
+
+This way you can build up a list of all classes that have this module included. Doesn't sound very handy? But maybe, when the module is included, you also want to extend that class. Maybe you have a method that should not be on the class, but on the object!
+
+With <span class="lang:ruby decode:true  crayon-inline " >self.included</span> and other hooks, everything's possible!
+
+<h2>How To Build Your Own DSL</h2>
+DSLs. How much we all love these little things, and how much we use them each and every day. Thank you, dynamic typing!
+
+Probably you have at least seen some RSpec code. Yes, all that <span class="lang:ruby decode:true  crayon-inline " >let</span>, <span class="lang:ruby decode:true  crayon-inline " >describe</span>, and other syntactic sugar is just a DSL, implemented in Ruby. Do you want to know how to do this? Then go read the book! It has  a few caveats that I can't all list here, because this is just a blog, not a book!
+
+Even better, he also mentions how to build an external DSL. An external DSL is not written in Ruby, and has to be parsed "by hand" with Ruby (without the Ruby interpreter helping). Which does have its pros and cons, as you might imagine.
+
+<h2>Conclusion</h2>
+All in all, a very good book that opened my eyes (and still does, on my second reading of it!). One of the really nice features about the book is its structure. Russ gives us first an introduction why we want to do this, then tells us how. So far so good.
+
+But then he continues: He also tells us how you can get in trouble with it. To top it off, he shows some examples of the described concept in the wild.
+
+If you are a Rubyist and you haven't yet read <a href="http://www.amazon.com/gp/product/0321584104/ref=as_li_ss_tl?ie=UTF8&camp=1789&creative=390957&creativeASIN=0321584104&linkCode=as2&tag=thecode00-20" title="Eloquent Ruby" target="_blank">Eloquent Ruby</a>, I highly suggest you do. Because Ruby can do a lot more than you might image!
+
+<em>If you liked this post, you should follow me <a href="https://twitter.com/codepoet_ch" title="Twitter">on Twitter</a> and sign up for the <a href="http://feeds.feedburner.com/TheCodePoet" title="RSS feed">RSS feed</a>!</em>

@@ -1,0 +1,156 @@
+---
+layout: post
+title: How do CSS grids work?
+tags:
+- code
+- Code Reading
+- css
+- design
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _clicky_goal: a:2:{s:2:"id";s:0:"";s:5:"value";s:0:"";}
+---
+When I started with a new web page I, like (probably?) most of us, didn't start from the very beginning. Why? Because there is a lot of ceremony involved in setting up the basic structure of a web app. We need a navigation. A content area. A header. A footer. And we probably arrange them in a grid. And of course we need to apply standard styling to buttons, forms, tables, and typography. Luckily, we have CSS frameworks that take out most of the guess-work and lay a good foundation for us. While it works, I always wondered how to these grids work? Is it magic?
+
+<h2>It' (not) magic!</h2>
+Let me give you an example. In <a href="http://twitter.github.com/bootstrap/" title="Twitter Bootstrap">Twitter's Bootstrap</a> we can arrange content with a few divs:
+
+<pre class="lang:xhtml decode:true " >&lt;div class="row"&gt;
+  &lt;div class="offset2 span4"&gt;
+    I'm offset two columns and four columns wide
+  &lt;/div&gt;
+  &lt;div class="span4"&gt;
+    I'm also four columns wide
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="row"&gt;
+  &lt;div class="offset2 span8"&gt;
+    And I'm on a new row!
+  &lt;/div&gt;
+&lt;/div&gt;</pre> 
+
+Other frameworks use similar syntax. So... how do they work?
+
+<h2>Bootstrap, 960 Grid System</h2>
+There are a few CSS frameworks around, but I will compare Twitter's Bootstrap and <a href="http://960.gs/" title="960.gs">960 Grid System</a>. I already showed a basic example with Bootstrap. Now let's compare it with 960.gs:
+
+<pre class="lang:xhtml decode:true " >&lt;div class="grid_4 prefix_2"&gt;
+  I'm offset two columns and four columns wide
+&lt;/div&gt;
+&lt;div class="grid_4"&gt;
+  I'm also four columns wide
+&lt;/div&gt;
+&lt;div class="clear"&gt;&lt;/div&gt;
+&lt;div class="grid_8 prefix_2"&gt;
+  And I'm on a new row!
+&lt;/div&gt;</pre> 
+
+It works similar to Bootstrap, in that we define the length with <span class="lang:xhtml decode:true  crayon-inline">"grid_4"</span> compared to <span class="lang:xhtml decode:true  crayon-inline ">"span4"</span>. Also we can define the offsets with <span class="lang:xhtml decode:true  crayon-inline ">"prefix_2"</span> (<span class="lang:xhtml decode:true  crayon-inline ">"offset2"</span> in Bootstrap). But there is a difference how we define a new row. Whereas Bootstrap uses an outer <span class="lang:xhtml decode:true  crayon-inline ">div</span> with class <span class="lang:xhtml decode:true  crayon-inline ">"row"</span>, 960.gs relies on a clearfix <span class="lang:xhtml decode:true  crayon-inline ">div </span> on the same level.
+
+Here I like Bootstraps approach better, because it is easier to walk through the HTML when I can collapse a whole row and don't have to search on possibly hundreds of divs on the same level to find the cell in the middle of the document.
+
+<h2>How these grids actually work</h2>
+Thanks for all the syntax, but I still didn't talk about how the magic happens. Let's look at Bootstrap first.
+
+<h4>Bootstrap SPAN</h4>
+If we take a <a href="https://github.com/twitter/bootstrap" title="Bootstraps Source Code">look at bootstraps source code</a>, we can find a file called <a href="https://github.com/twitter/bootstrap/blob/master/less/grid.less" title="grid.less">grid.less</a>*. The only thing this file does is call the #grid core mixin. There is also an import for the responsive version of the grid, but we will ignore that one for this walk-through.
+
+<pre class="lang:css decode:true " >// Fixed (940px)
+#grid &gt; .core(@gridColumnWidth, @gridGutterWidth);</pre> 
+(See also <a href="https://github.com/twitter/bootstrap/blob/master/less/grid.less#L1-2" title="grid.less import">on Github</a>) 
+
+We can find the core mixin under, surprise, surprise, <a href="https://github.com/twitter/bootstrap/blob/master/less/mixins.less#L546-589" title="mixins.less">mixins.less</a>. Bootstrap defines a mixin called  <span class="lang:css decode:true  crayon-inline " >.spanX (@index)</span>. It recursively creates all the <span class="lang:css decode:true  crayon-inline " >.span12 .span11</span> etc. classes in the compiled CSS.
+
+<pre class="lang:css decode:true " >    .spanX (@index) when (@index &gt; 0) {
+      (~".span@{index}") { .span(@index); }
+      .spanX(@index - 1);
+    }
+    .spanX (0) {}</pre> 
+(<a href="https://github.com/twitter/bootstrap/blob/master/less/mixins.less#L550-554" title="Github">On Github</a>)
+
+The line <span class="lang:css decode:true  crayon-inline " >(~".span@{index}") { .span(@index); }</span> uses <a href="http://lesscss.org/#-javascript-evaluation" title="LESS JavaScript Evaluation">Javascript Evaluation</a> to define the class. The rules will be the LESS mixin <span class="lang:css decode:true  crayon-inline " >.span</span> (line 2), so lets look at this next.
+
+<pre class="lang:css decode:true " >.span (@columns) {
+    width: (@gridColumnWidth * @columns) + (@gridGutterWidth * (@columns - 1));
+}</pre> 
+(<a href="https://github.com/twitter/bootstrap/blob/master/less/mixins.less#L566-568" title="Github">On Github</a>)
+
+This sets the width of the <span class="lang:css decode:true  crayon-inline " >.spanX</span> to the width of the columns plus the gutter in between the columns it spans. But wait! That can't be all! We can define multiple spans in a single row! So we have some more CSS!
+
+<pre class="lang:css decode:true " >[class*="span"] {
+      float: left;
+      margin-left: @gridGutterWidth;
+}</pre> 
+(<a href="https://github.com/twitter/bootstrap/blob/master/less/mixins.less#L575-578" title="Github">Github</a>)
+
+All classes that start with <span class="lang:css decode:true  crayon-inline " >.span</span> will be floated to the left. Additionally, the gutter is applied as margin on the left, so the columns have a bit distance between each other.
+
+So that about covers the <span class="lang:css decode:true  crayon-inline " >.span</span>. What about <span class="lang:css decode:true  crayon-inline " >.offset</span>?
+
+<h4>OFFSETing Bootstrap</h4>
+
+Offsetting works roughly the same as spanning the grid elements:
+
+<pre class="lang:css mark:7-8 decode:true " >.offsetX (@index) when (@index &gt; 0) {
+      (~".offset@{index}") { .offset(@index); }
+      .offsetX(@index - 1);
+    }
+    .offsetX (0) {}
+
+    .offset (@columns) {
+      margin-left: (@gridColumnWidth * @columns) + (@gridGutterWidth * (@columns + 1));
+}</pre> 
+(<a href="https://github.com/twitter/bootstrap/blob/master/less/mixins.less#L556-564" title="Github">Github</a>)
+
+Again, we have the <span class="lang:css decode:true  crayon-inline " >.offsetX</span>-mixin that creates the possible offsets. This will load the <span class="lang:css decode:true  crayon-inline " >.offset</span> mixin (note the missing 'X'), which calculates the, well, offsets (highlighted lines).
+
+All the classes I used in the example except <span class="lang:css decode:true  crayon-inline " >.row</span> have been explained. Let's look at the rows.
+
+<h4>Bootstrapping rows</h4>
+This one will be easy:
+ 
+<pre class="lang:css decode:true " >.row {
+      margin-left: @gridGutterWidth * -1;
+      .clearfix();
+}</pre> 
+(<a href="https://github.com/twitter/bootstrap/blob/master/less/mixins.less#L570-573" title="Github">Github</a>)
+
+It adds a margin to each row and then loads the <span class="lang:css decode:true  crayon-inline " >.clearfix</span> mixin. The clearfix code requires some trickery since clearfix and browsers tend to hate each other (<a href="http://nicolasgallagher.com/micro-clearfix-hack/" title="Clearfix Hack">as described in the comment</a>).
+ 
+<pre class="lang:css decode:true " >.clearfix {
+  *zoom: 1;
+  &amp;:before,
+  &amp;:after {
+    display: table;
+    content: "";
+  }
+  &amp;:after {
+    clear: both;
+  }
+}</pre> 
+(<a href="https://github.com/twitter/bootstrap/blob/master/less/mixins.less#L11-22" title="Github">Github</a>)
+
+<h4>The Bootstrap Conclusion</h4>
+So how does bootstrap generate the grid? Four steps are needed:
+
+<ul><li>Create all possible <span class="lang:css decode:true  crayon-inline " >.spanX</span> classes, where the length is calculated based on column width and gutter. Also float them to the left.</li>
+<li>Create all possible <span class="lang:css decode:true  crayon-inline " >.offset</span> classes with the length calculated from column width and gutter.</li>
+<li>Create a <span class="lang:css decode:true  crayon-inline " >.row</span> class that acts as a clearfix.</li>
+</ul>
+
+And now we have a grid system!
+
+<h2>So what about 960.gs?</h2>
+I didn't forget! So let's do a check if they use the same system. <a href="http://960.gs/demo.html" title="960.gs Demo Page">Go to the 960.gs demo page</a> and see for yourself.
+
+<span class="lang:css decode:true  crayon-inline " >.grid_2</span> is defined as <span class="lang:css decode:true  crayon-inline " >width: 140px</span> and all grid classes are floated to the left and have a gutter applied. The only difference is that 960.gs seems to apply the gutter to left and right, whereas Bootstrap just applies it to the left margin. The <span class="lang:css decode:true  crayon-inline " >"clear"</span> class is a simple clearfix (who would have thought?). The <span class="lang:css decode:true  crayon-inline " >.prefix_X</span> classes have a <span class="lang:css decode:true  crayon-inline " >.padding</span> applied to the left. Again a small difference, 960.gs applies a padding, but Bootstrap relies on margin. So which one is right? ;)
+
+<h2>So there you have it</h2>
+Both systems work roughly the same, with small differences. Both use floated cells with a clearfix to make rows. Both define a cell length and a cell offset. One uses margin, the other padding.
+
+Did I miss something interesting? And are there any CSS frameworks out there which use a different system?
+
+* Which means Bootstrap is written with <a href="http://lesscss.org/" title="LESS">LESS</a>, a CSS preprocessor like SASS.

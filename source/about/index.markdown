@@ -15,4 +15,4 @@ I am a developer, gamer and lover of music. In my free time you can also occasio
 
 This blog is intended to offer the newest ideas and opinions around the Ruby web development world, be that Ruby on Rails, Sinatra, Coffeescript, CSSS, HTML5, and countless other topics.
 
-If you like what I do, you should also consider [hiring me as a freelancer, part-time or full time!](/hiring/)
+If you like what I do, you should also consider [hiring me as a freelancer, part-time or full time!](/hireme/)

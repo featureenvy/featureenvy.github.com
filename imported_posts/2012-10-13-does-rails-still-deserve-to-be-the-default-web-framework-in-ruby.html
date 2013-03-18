@@ -1,0 +1,117 @@
+---
+layout: post
+title: Does Rails Still Deserve To Be The Default Web Framework In Ruby?
+tags:
+- camping
+- cramp
+- cuba
+- framework
+- rails
+- Ruby
+- sinatra
+- web
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _clicky_goal: a:2:{s:2:"id";s:0:"";s:5:"value";s:0:"";}
+---
+To answer the question directly (aka a TLDR here for the impatient): I don't know. Read on! (HA! Tricked you there!)
+
+Let's take a dive through some Ruby web frameworks. There is one or two around, even if we don't count Rails. I promise!
+
+<h3>But First, Let's Take The Rails</h3>
+You know, I'm from Switzerland. We love the Railway here. We take it everywhere. It's our go to solution. Why? It offers everything we need, it is on time, and we can precisely plan when we will be at the destination.
+
+Like Rails! It is the go to solution, exactly because it offers so much stuff. Want migrations? It's right there! Want an asset pipeline? It's right there! Want to use SASS? It's right there! Architecture? Done. Validations? Done. ORM? Done. Security? Done.
+
+This is really nice! And we know that it might not be the quickest way to get somewhere, but it will surely get us there in a hell of a good time and still can continue from there. There are no dead ends!
+
+<em>If you are American, I'm sorry. I know you probably don't get why calling Rails after the Railway is a good and apt metaphor. So come visit Switzerland, get a good local beer with me and I will show you why!</em>
+
+<h3>Onwards, To Cuba!</h3>
+Cuba! Where you can really do whatever you want. Welcome to the island of simpler times. The island where everything still seems easy.
+
+Cuba doesn't have too many complicated processes. Everything can be done, as long as you do it yourself.
+
+Welcome to <a href="https://github.com/soveran/cuba" title="Cuba" target="_blank">Cuba</a>, the Ruby microframework. Using Cuba is real easy:
+<pre class="lang:ruby decode:true " >require "cuba"
+
+Cuba.use Rack::Session::Cookie
+
+Cuba.define do
+  on get do
+    on "hello" do
+      res.write "Hello world!"
+    end
+
+    on root do
+      res.redirect "/hello"
+    end
+  end
+end</pre> 
+
+Yes, that's it! Inspired by <a href="http://www.sinatrarb.com/" title="Sinatra" target="_blank">Sinatra</a>? Maybe. It offers a few other things, like security or template handling through <a href="https://github.com/rtomayko/tilt" title="Tilt" target="_blank">Tilt</a>.
+
+A very simple, and laid back framework. Very fitting for Cuba.
+
+<h3>Lets Go Camping</h3>
+But of course, now that we are in Cuba, let's go camping! This way, we can see the landscape. We can see the world like it really is, unfiltered. And it is healthy, too!
+
+Don't know how to set up your tent? No problem, maybe the <a href="http://camping.io/" title="Camping" target="_blank">Camping</a> framework can help: 
+<pre class="lang:ruby decode:true " >Camping.goes :Tent
+
+module Tent::Models
+  class Tarpaulin &lt; Base; end
+end
+
+module Tent::Controllers
+  class Index
+    def get
+      @tarpaulins = Tarpaulin.all
+      render :index
+    end
+  end
+end
+
+module Tent::Views
+  def index
+    @tarpaulins.each do |tarpaulin|
+      h1 tarpaulin.size
+      div { tarpaulin.color }
+    end
+  end
+end</pre> 
+
+Yep, that's it. Very Rails inspired, isn't it? But it makes sense, because going camping with the train makes a lot more sense! And yes, it is all in one file. Including MVC, including routes, including everything!
+
+But will it replace Rails? I don't think so.
+
+<h3>All That Traveling Gives Me A Cramp</h3>
+Already? A cramp? We just traveled a bit around Cuba and you have already a cramp? I guess it was time to get you out of your comfort zone!
+
+Ah, that damn cramp. This is something special. But lucky for us, we don't have to wait until your cramp recedes, we can just continue. Nice, isn't it?
+
+Don't know why we can continue even while you have a <a href="http://cramp.in/" title="Cramp" target="_blank">Cramp</a>? See for yourself: 
+<pre class="lang:ruby decode:true " >require 'cramp'
+
+class GoHomeAction &lt; Cramp::Action
+  def start
+    render "Let's Go Home"
+    finish
+  end
+end</pre> 
+
+Yup, that's it. The cool thing about Cramp? It is designed for asynchronous requests right out of the box. It is very simple, but powerful, if used the right way.
+
+But, since walking around with a cramp isn't fun, maybe it's time that we head home.
+
+<h3>Home Sweet Home</h3>
+Welcome back! I hope you enjoyed this tour around the (Ruby) world. I know I did! So to answer the question that the title was asking all along: Probably not, since all these other frameworks target another niche.
+
+Will something replace Rails? I don't know. Rails has a lot of convenience built it that it just a burden to lose. And I don't think we will see a new full featured web framework soon. But these micro frameworks are really nice for the small niche that they chose to fill.
+
+So for very small apps, maybe Rails isn't the right choice. For bigger ones? I still think the convenience of Rails can't be topped by these small frameworks.
+
+<em>If you liked this post, you should consider <a href="http://the.codepoet.ch/hire-me/" title="Hire Me">hiring me freelance, part-time or full-time</a>!</em>

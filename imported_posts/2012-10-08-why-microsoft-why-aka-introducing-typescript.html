@@ -1,0 +1,75 @@
+---
+layout: post
+title: Why Microsoft, Why? (aka Introducing TypeScript)
+tags:
+- javascript
+- microsoft
+- Opinion
+- rant
+- typescript
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _clicky_goal: a:2:{s:2:"id";s:0:"";s:5:"value";s:0:"";}
+---
+Interesting. Microsoft recently released their own version of JavaScript, <a href="http://www.typescriptlang.org/" title="TypeScript" target="_blank">TypeScript</a>! Now, some people might want to mock Microsoft for that. Maybe they just couldn't make Visual Studio play nice with JavaScript, so they made TypeScript. Oh wait! <a href="http://twitter.com/codepoet_ch/status/253329673252118530" title="Me mocking TypeScript" target="_blank">I <strong>am</strong> one of those people!</a>
+
+Naah, let's be serious here. TypeScript is something like CoffeeScript. It does less and more. It offers "proper" type support and a class system. They don't touch any syntax however.
+
+<em>At first I simply wanted to introduce TypeScript, but it turned out in fact I just wanted to rant about how wrong Microsoft is once again in trying to introduce their own standards.</em>
+
+<h3>An Example, Please!</h3>
+Sure, judge for yourself:
+ 
+<pre class="lang:js decode:true " >class Greeter {
+	greeting: string;
+	constructor (message: string) {
+		this.greeting = message;
+	}
+	greet() {
+		return "Hello, " + this.greeting;
+	}
+}   
+
+var greeter = new Greeter("world");
+
+var button = document.createElement('button')
+button.innerText = "Say Hello"
+button.onclick = function() {
+	alert(greeter.greet())
+}
+
+document.body.appendChild(button)</pre> 
+(Taken straight from their <a href="http://www.typescriptlang.org/Playground/" title="TypeScript Example" target="_blank">documentation</a>)
+
+So this is basically JavaScript syntax. All braces are kept intact. Except it introduces classes and types, that will be checked during compilation.
+
+<h3>So, Why?</h3>
+Apparently, <a href="http://www.zdnet.com/who-built-microsoft-typescript-and-why-7000005206/" title="Why Microsoft Made TypeScript" target="_blank">some people working for Microsoft had problems with JavaScript</a>. Which is fair, since I guess we all have problems with JavaScript sometimes. Microsoft solution? Make our own JavaScript!
+
+Because, let's be honest, this worked so well with a lot of stuff they did, like, oh, ActiveX... or OOXML.
+
+<h3>Why Does Microsoft Need Its Own Stuff Again?</h3>
+I honestly have no idea. No idea whatsoever! It doesn't make any sense. We have CoffeeScript. If they wanted to back a JavaScript replacement with types, why not back <a href="http://www.dartlang.org/" title="Dart by Google" target="_blank">Google's Dart</a>? It would make a lot more sense.
+
+But no, Microsoft had to introduce its own stuff again. Why will remain a mystery, probably forever.
+
+<h3>Will This Succeed?</h3>
+Probably. Why? Simply because in Microsoft world, people love Microsoft stuff. Nothing wrong with that, it is convenient. And if Microsoft backs something, this means people will probably pick it up.
+
+The integration into Visual Studio, the IDE of choice for Microsoft programmers, will probably have superb support for TypeScript, including refactoring and all the other goodies that people expect from IDEs these days.
+
+So yes, I think  a few people will pick it up, just because it is bundled. The same way that a lot of Rubyists picked up SASS, or CoffeeScript, simply because it comes bundles with Rails. And yes, I know, not every Rubyist uses Rails, sorry 'bout that!
+
+<h3>You Don't Like It, Right?</h3>
+Well, no. It doesn't offer enough new stuff that we could consider this a new awesome thing that could change the landscape of web programming. In fact, I don't think it offers anything new.
+
+So no, I don't like it. I don't like it when companies waste good, sparse programming talent. Why couldn't Microsoft back Dart? Than that language would suddenly be huge! If Chrome and Internet Explorer come with proper Dart support, Mozilla would have no choice but to back it too!
+
+But no, this way we, again, have multiple "standards" that aren't interoperable. We will have another fight on our hands with Google pushing for Dart, Microsoft for TypeScript, and Mozilla (maybe) for CoffeeScript. <a href="http://html5doctor.com/multimedia-troubleshooting/#browser-support" title="The Video Codec Mess" target="_blank">Does this remind anyone else of web codecs?</a>
+
+No, no, and no. I do not agree with that decision by Microsoft. I think its wrong, bad, and it definitely won't help move the web forward. In fact, it pushes it backwards.
+
+So sorry. No.

@@ -1,0 +1,98 @@
+---
+layout: post
+title: What Is Your Rails Testing Stack?
+tags:
+- guard
+- javascript
+- Ruby
+- test
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _clicky_goal: a:2:{s:2:"id";s:0:"";s:5:"value";s:0:"";}
+---
+Developing a Rails application is awesome. Why? Because the testing stack is really, really good! But, this is also a problem. There is so much to choose from, that it sometimes is really hard to figure out what is useful and what isn't.
+
+I don't know about you, but my Gemfile tends to have a lot of stuff in the group <span class="lang:ruby decode:true  crayon-inline " >:development, :test</span>. 
+<pre class="lang:ruby decode:true " >group :development, :test do
+  gem 'rspec-rails'
+  gem 'cucumber-rails', :require =&gt; false
+  gem 'database_cleaner'
+  gem 'capybara'
+  gem 'launchy'
+  gem 'rr'
+  gem 'awesome_print'
+  gem 'jasminerice'
+  gem 'guard-jasmine'
+  gem 'poltergeist'
+end</pre> 
+
+Holy crap that's big! Of course, it also has some helpers only for development: 
+<pre class="lang:ruby decode:true " >group :development do
+  gem 'guard'
+  gem 'libnotify'
+  gem 'guard-spork'
+  gem 'guard-cucumber'
+  gem 'guard-rspec'
+  gem 'guard-livereload'
+  gem 'spork'
+  gem 'pry-rails'
+  gem 'pry-stack_explorer'
+  gem 'pry-debugger'
+end</pre> 
+
+Not too shaby, huh? So let me get into the details for each of those.
+
+<h3>Guard</h3>
+<a href="https://github.com/guard/guard" title="Guard" target="_blank">Guard </a>is an amazing tool to automate nearly everything. Don't believe me? Take a look at all the possible <a href="https://github.com/guard" title="Guard Extensions" target="_blank">Guard extensions on Github</a>! So what does Guard do?
+
+It basically is a system that runs in the background and can watch files. Extensions tell it (through a <code>Guardfile</code>) that it should do something if a specific file pattern changes. For example, the <a href="https://github.com/guard/guard-cucumber" title="guard-cucumber" target="_blank">Cucumber guard</a> checks for this: 
+<pre class="lang:ruby decode:true " >guard 'cucumber', :cli =&gt; "--drb" do
+  watch(%r{^features/.+\.feature$})
+  watch(%r{^features/support/.+$})          { 'features' }
+  watch(%r{^features/step_definitions/(.+)_steps\.rb$}) { |m| Dir[File.join("**/#{m[1]}.feature")][0] || 'features' }
+end</pre> 
+
+It looks at all features in the features directory, and Guard will call the Cucumber guard if one of these files changes. In term, guard-cucumber will call Cucumber and show it to you on the console. Neat, isn't it?
+
+Of course, this isn't just for Cucumber! I also use the <a href="https://github.com/guard/guard-rspec" title="guard-rspec" target="_blank">RSpec guard</a> (for RSpec tests, duh!), <a href="https://github.com/guard/guard-spork" title="guard-spork" target="_blank">Spork </a>and <a href="https://github.com/guard/guard-livereload" title="guard-livereload" target="_blank">livereload</a>.
+
+<a href="https://github.com/sporkrb/spork" title="Spork" target="_blank">Spork </a>is a DRb (Distributed Ruby) server that preloads the Rails environment so the tests run faster. Adding this guard makes Guard start the DRb server for Cucumber and RSpec automatically when starting Guard itself.
+
+Another very neat guard is guard-livereload. Thanks to an extension in Chrome, this guard will automatically reload the page I have open when I change the ERb or the CSS files. Makes fiddling with CSS a lot easier!
+
+<h3>You Have To PRY It From My Cold Dead Hands</h3>
+<a href="https://github.com/pry/pry" title="Pry" target="_blank">PRY </a>is one of those tools that you just have to know (and love). It is an alternative to IRB, and way better! Just add a  <span class="lang:ruby decode:true  crayon-inline " >binding.pry</span> to your code and Pry will open in that context when the code runs over it. It allows you to change into classes and objects to inspect them more closely. And edit the methods if you want to!
+
+Some additions I added to Pry (and there are a few <a href="https://github.com/pry/pry/wiki/Available-plugins" title="Pry Plugins" target="_blank">Pry plugins</a>) are <a href="https://github.com/nixme/pry-debugger" title="Pry Debugger" target="_blank">pry-debugger</a>, so I can step through code and see what it really does. To complement Pry Debugger, I also use <a href="https://github.com/pry/pry-stack_explorer" title="Pry Stack Explorer" target="_blank">pry-stack_explorer</a>. This plugin allows us to move up the stack and see the state of the code there.
+
+Of course, in a perfect world, we never have to use one of these tools, but yeah... Real world and these things...
+
+<h3>Testing tools</h3>
+You might now say: "Hey! You said you will talk about <strong>testing</strong> tools, not support tools!" And you are right! (Though these support tools are amazing for testing!)
+
+Yes, testing tools. For my testing needs I use the standard combo <a href="http://rspec.info/" title="RSpec" target="_blank">RSpec</a>, <a href="http://cukes.info/" title="Cucumber" target="_blank">Cucumber</a>, <a href="https://github.com/bmabey/database_cleaner" title="Database Cleaner" target="_blank">database_cleaner</a>, <a href="https://github.com/jnicklas/capybara" title="Capybara" target="_blank">Capybara</a> and <a href="https://github.com/btakita/rr" title="rr" target="_blank">rr</a> stack. I don't think I have to explain these (Do I? If I do, you should tell me so in the comments!)
+
+Additionally I use <a href="https://github.com/copiousfreetime/launchy" title="Launchy" target="_blank">launchy </a>to launch a browser window with the current state of the page to debug Cucumber steps.
+
+I also make copious use of <a href="https://github.com/michaeldv/awesome_print" title="Awesome Print" target="_blank">awesome_print</a>, because it is, well, awesome! awesome_print can be used instead of <span class="lang:ruby decode:true  crayon-inline " >puts</span> or <span class="lang:ruby decode:true  crayon-inline " >pp</span> to output objects and have an easier time inspecting them. (Pry also can use awesome_print for it's built in printing habits!)
+
+<h3>Last But Not Least: JavaScript Testing</h3>
+Something I struggled with for a bit, but found a good solution for, is JavaScript testing. There are two aspects here: One is Cucumbers Javascript support. For some acceptance tests, I needed Javascript to run. Per default, Cucumber uses Selenium (with a real browser), which is slow and not awesome at all! And then there are the Javascript unit tests, that also need to run.
+
+For the unit tests I settled on <a href="http://pivotal.github.com/jasmine/" title="Jasmine" target="_blank">Jasmine</a>. Why? Because it seems it even tries to be as close to RSpec as possible, so I don't have to learn yet another testing system. To run them, I of course, use a guard: <a href="https://github.com/netzpirat/guard-jasmine" title="guard-jasmine" target="_blank">guard-jasmine</a> (Who's surprised?)
+
+guard-jasmine uses <a href="http://phantomjs.org/" title="PhantomJS" target="_blank">PhantomJS </a>to run the Javascript tests in a headless mode (without a user interface), which makes them fast (not incredibly fast, but at least fast).
+
+Of course we also want to integrate the Jasmine unit tests with the asset pipeline so we can use CoffeeScript. Luckily, Brad Phelan solved that problem and released <a href="https://github.com/bradphelan/jasminerice" title="JasmineRice" target="_blank">JasmineRice</a>.
+
+Now, this doesn't yet solve the Cucumber problem. For that, we can use <a href="https://github.com/jonleighton/poltergeist" title="Poltergeist" target="_blank">Poltergeist</a>. Poltergeist is a PhantomJS driver for Capybara. Do you see how this neatly matches up with guard-jasmine? Nice, isn't it? I just configured Capybara to use Poltergeist instead of Selenium, and now the tests run at an acceptable rate.
+
+<h3>So, What's Your stack?</h3>
+Yes, that is my "standard" Rails testing stack. I think this covers about everything I need. One thing that's not included (because I currently don't need it) is something like <a href="https://github.com/myronmarston/vcr" title="VCR" target="_blank">VCR</a>. VCR records HTTP interactions, so that during testing the HTTP calls don't have to be made, but can be replayed by VCR. Which makes things even quicker.
+
+Have I missed something? Added something superfluous? What do you use for your testing stack?
+
+<em>If you liked this post, you should follow me <a href="https://twitter.com/codepoet_ch" title="Twitter">on Twitter</a> and sign up for the <a href="http://feeds.feedburner.com/TheCodePoet" title="RSS feed">RSS feed</a>!</em>

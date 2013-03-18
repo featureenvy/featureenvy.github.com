@@ -1,0 +1,87 @@
+---
+layout: post
+title: ! 'Ruby 2.0 Reaches Feature Freeze: What Will Change?'
+tags:
+- '2.0'
+- refinements
+- release
+- Ruby
+- ruby-core
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _genesis_title: ! 'The Ruby Language Reaches 2.0 Feature Freeze: What Will Change?'
+  _clicky_goal: a:2:{s:2:"id";s:0:"";s:5:"value";s:0:"";}
+---
+Yes, you read right: <a href="http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-dev/46258" title="Ruby Feature Freeze Announcement">Ruby 2.0 is in feature freeze</a>! This doesn't mean it will be released in the next month. But it introduces us the most important changes that will come with version 2.0.
+
+The timing is actually pretty impressive, since this feature freeze was announcement by Yusuke Endoh one year ago! Ruby seems to be on track (pun totally intended)! Want more details? Read on!
+
+<h3>The Release Plan</h3>
+Right now, there are two important milestones left: Code freeze and release. Code freeze is planned at the end of the year. So all the bugs should be more or less ironed out by then.
+
+And then, on February 02, 2013, <a href="http://en.wikipedia.org/wiki/Ruby_(programming_language)#Choice_of_the_name_.22Ruby.22" title="Rubys First Words!">20 years after Ruby became part of this world</a>, <a href="http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-core/40301" title="Ruby 2.0 Release Plan">Ruby 2.0 should be released</a>!
+
+<h3>The New Features</h3>
+There isn't yet an official list out with all the new features, but the source code, commit history and discussions are open to the public, so it is no secret!
+
+This isn't a big release as the change from 1.9 to 2.0 would suggest, there are only a handful of new features:
+
+<h3>Refinements</h3>
+Refinements are one of the more interesting changes that could actually change the way Ruby code is written. <a href="http://bugs.ruby-lang.org/issues/show/4085" title="Ruby Bug Tracker: Refinements">It allows you to monkey patch a class</a>, but only where you want to, and not in the global scope.
+
+Monkey patching could actually become an accepted thing to do!
+
+Some code? Sure:
+ 
+<pre class="lang:ruby decode:true " >module StringExt
+  refine String
+    def length
+      42
+    end
+  end
+end</pre> 
+
+Here we define a module that contains a refinement (<span class="lang:ruby decode:true  crayon-inline " >refine</span>) for String. Because length should always be 42 (for whatever reason...). Let's define a class that could use it:
+<pre class="lang:ruby decode:true " >class TheAnswerToLifeTheUniverseAndEverything
+  def self.answer(the_question)
+    the_question.length
+  end
+end</pre> 
+
+But that is wrong! And that's right. No, wait, I mean, the <strong>answer</strong> is wrong, but the rest is right. That's because we didn't use the refinement yet, we just defined it.
+
+Let's use it then: 
+<pre class="lang:default mark:2 decode:true " >class TheAnswerToLifeTheUniverseAndEverything
+  using StringExt
+
+  def self.answer(the_question)
+    the_question.length
+  end
+end</pre> 
+
+If we ask for <span class="lang:ruby decode:true  crayon-inline " >TheAnswerToLifeTheUniverseAndEverything.answer("I want the answer to everything!!! NOOOOOW")</span> it will tell us 42. Exactly what we want. But the behavior of <span class="lang:ruby decode:true  crayon-inline " >String#length</span> outside of our class hasn't changed. At all! Only when we use it inside class that is using this refinement is the behavior changed.
+
+Which could be really handy!
+
+<h3>Named Arguments</h3>
+Another one that we might end seeing a lot is named arguments. Named arguments could replace the options hash that is so prevalent in todays Ruby code. Use  <span class="lang:ruby decode:true  crayon-inline " >def namedParameters?(yes: true, no: false) [...] end</span>.
+
+Then there are some internal changes and some speed improvements for MRI. Nothing exciting, but definitely good changes.
+
+<h3>Will It Break Stuff?</h3>
+Most likely? No. The most likely candidate to break stuff? <span class="lang:ruby decode:true  crayon-inline " >respond_to?</span>.
+
+The behavior of <span class="lang:ruby decode:true  crayon-inline " >respond_to?</span> in regards to protected methods has changed. By default, in 2.0, it doesn't search for private or protected methods, in Ruby 1.9 it only excludes private methods. <a href="http://tenderlovemaking.com/2012/09/07/protected-methods-and-ruby-2-0.html" title="Tenderlove on respond_to? in Ruby 2.0">The amazing Tenderlove has a great writeup about this</a>.
+
+Apart from that, it seems like there is nothing else that will break with Ruby 2.0, so the upgrade should be easier then going from 1.8 to 1.9. <a href="https://bugs.ruby-lang.org/projects/ruby-trunk/roadmap#2.0.0" title="Rubys 2.0 Roadmap">Even though the roadmap is actually pretty big!</a>
+
+<h3>Yay! Exciting Stuff!</h3>
+
+I'm looking forward to Ruby 2.0. I'm especially interested in what kind of clever hacks people will come up with now that we have refinements.
+
+What are you looking forward to? What is still missing in your opinion?
+
+<em>If you liked this post, you should consider <a href="http://the.codepoet.ch/hire-me/" title="Hire Me">hiring me freelance, part-time or full-time</a>!</em>

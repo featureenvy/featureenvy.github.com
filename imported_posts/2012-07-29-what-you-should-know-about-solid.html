@@ -1,0 +1,86 @@
+---
+layout: post
+title: What you should know about SOLID
+tags:
+- Theory
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _clicky_goal: a:2:{s:2:"id";s:0:"";s:5:"value";s:0:"";}
+---
+Did you always wonder what that whole SOLID thing is all about? Why everyone is shouting at you for violating the Law of Demeter (you won't go to jail for that one, by the way)? And did you talk about soccer when people mentioned the Liskov substitution principle and looked at you confused? Then read on!
+
+I always like going to the <a href="http://en.wikipedia.org/wiki/SOLID_(object-oriented_design)" title="SOLID (object-oriented design)">SOLID wikipedia page</a> because SOLID is a mnemonic acronym. SOLID stands for <strong>Single responsibility, Open-closed, Liskov substitution, Interface segregation and Dependency inversion</strong>. Makes sense yet? Lets briefly go over each one.
+
+<h3>Single Responsibility Principle</h3>
+The <em>Single Responsibility Principle</em> says that every class should have one job, and one job alone, but do it really, really well. If you want to know if your class is violating SRP, describe what the class does. If you use <em>and</em> or <em>or</em> in the sentence, it is a strong sign that you violate the SRP principle.
+
+Let's look at an example of a duck:
+<pre class="lang:ruby decode:true " >class Duck
+  attr_accessible :name
+
+  def eat
+    @food -= 1
+    remove_food
+  end
+
+  def swim
+  end
+
+  def remove_food
+  end
+end</pre> 
+
+A very simple class that does one thing: Keep track of a duck (in a pond for example). The problem with this example is that if we want to describe it, we would probably say the following: <strong>It keeps track of a duck and keeps track of the food.</strong>
+
+Yes, the dreaded <strong>and</strong>. So how would we rewrite this example? One way to encapsulate this better is to remove the food in a <span class="lang:ruby decode:true  crayon-inline " >Food</span> class and not manage the food supplies in the Duck itself.
+
+SRP also says that the model should hide the implementation details. That's why I use in the example  <span class="lang:ruby decode:true  crayon-inline " >eat</span> instead of <span class="lang:ruby decode:true  crayon-inline " >grab_food</span>. How we eat is an implementation detail of the Duck model itself. If we want to change how food is handled, the only thing we should have to change is the <span class="lang:ruby decode:true  crayon-inline " >Duck</span> class itself, and nothing else.
+
+<h3>Open/Closed Principle</h3>
+The next principle is about open/closed classes. But you might now way "But Codepoet, in Ruby all classes <strong>are</strong> open!". And you would of course be right. But that's not the whole point of the open/closed principle.
+
+If we want to follow this principle, all classes cannot be changed once they implementation is completed, except for bug fixing. If the behavior should be changed for one part of the system, the class should be open, however, to be extended in another class.
+
+This is one of those principles which is sometimes hard to follow, since requirements change, and programs evolve. So sometimes a class has to be changed, or added some functionality. Always making a new class just isn't feasible.
+
+However, keeping this principle in mind is a good thing, especially with Ruby where we have easy ways to extend classes and even objects. Maybe some methods shouldn't be added to the base class, since most of the system doesn't need them, but just to one part of the system.
+
+<h3>Liskov Substitution Principle</h3>
+LSP (not to be confused with LSD) states that any object inheriting from another has to keep the constraints of the superclass intact. This includes preconditions (this value can't be null), postconditions (return value is rounded to an integer) and invariants. This sounds too abstract? I agree, so let's make an example:
+
+Given we develop a system to measure ducks. So of course we have a <span class="lang:ruby decode:true  crayon-inline " >RealDuck</span> class that can swim, eat, quack, etc. Swim means we give it a value, it proceeds the given distance, and then returns. If we then ask it for the position, it will have advanced the given distance. Easy as pie!
+
+Now we want to compare  the real ducks with a mechanical replacement duck (the reason to do this is left to the reader). So we subclass it, add a new method <span class="lang:ruby decode:true  crayon-inline " >replaceBatteries</span>, and we are done! But not quite! Even though this looks perfect on paper, we just violated Liskovs Substitution Principle. Why? Because now, if the <span class="lang:ruby decode:true  crayon-inline " >MechanicalDuck</span> swims, it might not get a single feet ahead because the battery is empty. But that's an invariant that the <span class="lang:ruby decode:true  crayon-inline ">RealDuck</span> guarantees! (Except if you insure the duck before, but come on!)
+
+Most of the violations of LSP are small, but can have a huge rippling effect if the rest of the system relies on a different behavior.
+
+<h3>Interface Segregation Principle</h3>
+Another principle with an impressive name. But this one is simple to understand: Design your interfaces so that they deal with one thing, and only one. Sounds familiar? It should, because it is similar to the <em>Single Responsibility Principle</em> discussed above.
+
+The difference between the two is that SRP deals mostly on the class level, while ISP is concerned mostly about the overall architecture of a system. If you follow this principle, then your interfaces will be small and to the point, without anything in there that can't be separated out.
+
+Lets look at the <span class="lang:ruby decode:true  crayon-inline ">RealDuck</span> and the <span class="lang:ruby decode:true  crayon-inline ">MechanicalDuck</span> again. The duck has to eat, of course, and that's why it is in the class. But a mechanical device doesn't have to eat! So it doesn't make any sense that the mechanical duck has an <span class="lang:ruby decode:true  crayon-inline ">eat</span> method. So the interface is too large for this use case, and it should be refactored out.
+
+<h3>Dependency Inversion Principle</h3>
+The Dependency Inversion Principle states that high-level and low-level modules shouldn't be tightly coupled together, and that they can be replaced. This is especially useful for testing the higher-level components, because the lover-level modules that they depend on can simply be replaced by mock modules.
+
+In Ruby, one way to achieve this goal is to add an optional argument to  <span class="lang:ruby decode:true  crayon-inline " >initialize</span> where the dependency can be replaced.
+
+To give an example:
+<pre class="lang:ruby decode:true " >class Duck
+  def initialize(food_source = DefaultFoodSource.new)
+    @food_source = food_source
+  end
+end</pre> 
+
+This way we can add another food source if we want (for example, an <span class="lang:ruby decode:true  crayon-inline " >InfiniteFoodSource</span>), so that we can test the duck in isolation.
+
+<h3>And That's It!</h3>
+Yes, that's it. We are done. No more talking about sports when Liskovs Substitution Principle comes up. No more hand stands when someone talks about Dependency Inversion. Nice!
+
+Though always keep in mind: These are just guidelines. Principles. They aren't law. If you have a good reason to go against one of these principles, then do it!
+
+<em>If you liked this post, you should follow me <a href="https://twitter.com/codepoet_ch" title="Twitter">on Twitter</a> and signup for the <a href="http://feeds.feedburner.com/TheCodePoet" title="RSS feed">RSS feed</a>!</em>

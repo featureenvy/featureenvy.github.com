@@ -1,0 +1,87 @@
+---
+layout: post
+title: What Others Know About Compression That You Don't
+tags:
+- bzip2
+- compression
+- deflate
+- Theory
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _clicky_goal: a:2:{s:2:"id";s:0:"";s:5:"value";s:0:"";}
+  _wp_old_slug: what-others-know-about-compresson-that-you-dont
+---
+Ah, the compression formats. Always a mystery. Always just something we will use, but something we never understand. For one thing, this makes sense, considering Wikipedia alone <a href="http://en.wikipedia.org/wiki/List_of_archive_formats#Compression_only" title="Compression Formats on Wikipedia">lists 15 different compression formats</a>. There are the well-known <strong>bz2</strong>, <strong>gz</strong> and <strong>LZMA</strong> algorithms. And the less well-known <strong>rz</strong>, <strong>?Q?</strong> and <strong>??_</strong>. Now that last one makes me happy this isn't a podcast...
+
+Though for this post we will concentrate on <a href="http://en.wikipedia.org/wiki/Deflate" title="Deflate">Deflate</a>. Deflate is not only used in gzip and zip, but is also a fan favorite to compress web assets when sent to the browser.
+
+<h3>The Basic Building Blocks</h3>
+Underneath Deflate uses <a href="http://en.wikipedia.org/wiki/LZ77_and_LZ78" title="LZ77">LZ77</a> combined with a <a href="http://en.wikipedia.org/wiki/Huffman_coding" title="Huffman Coding">Huffman encoding</a>.
+
+LZ77 is used to detect duplicate strings and insert a so-called back reference (more on this later). Huffman Encoding is similar to ASCII, but instead of always using 8 bits, it stores the most used characters in 3 bits, and the least used ones, with, well, more bits. More on this also later.
+
+<h3>Come On, Deflate Already!</h3>
+First, Deflate chops up all parts into blocks to make processing easier. Then it decides in which mode it should encode that block:
+<ol>
+	<li>Store raw stream</li>
+	<li>Store with a static Huffman encoding</li>
+	<li>Store with a dynamic Huffman Encoding</li>
+</ol>
+
+Now, it still doesn't deflate. But lets see.
+
+<strong>First mode is raw mode.</strong> In raw mode, Deflate decides that the data is already compressed and it can't do a better job. So it just inserts its header to say "I can't do anything with that, this is already compressed, dummy!". That's why, the next time a coworker shouts at you why you didn't ZIP these files, you can shout back: "D'oh, mode 1, man!".
+
+<strong>Second mode is static Huffman mode.</strong> This just means that Deflate decides that the data is standard enough that the standard Huffman Encoding table should be used. For example useful for English text. This way Deflate doesn't have to add a table as overhead to the compressed content.
+
+<strong>Third is dynamic Huffman mode.</strong> With dynamic Huffman mode, the content gets compressed with a Huffman Encoding, but the encoding table is generated based on the input. So for example, in Finish, the shortest code would probably be "ö", or something like that. In <a href="http://twitter.com/zedshaw" title="Zed Shaw on Twitter">@zedshaw</a>'s <a href="http://twitter.com/zedshaw/status/237069420281872385" title="Zed Shaw">recent</a> <a href="http://twitter.com/zedshaw/status/237069091368730624" title="Zed Shaw">tweets</a> it could be "C", "F", "K"  and "U", who knows!
+
+But that leaves us with two question: Huffman Encoding, wut? And LZ77?
+
+
+<h3>Huffman Encoding</h3>
+Huffman Encoding is something that a guy called Huffman developed while getting a Ph.D from <del datetime="2012-08-21T06:14:29+00:00">MTI</del> MIT. Nothing surprising until now! The paper on it is actually from 1952. Damn it! That's double my age! That paper should feel old!
+
+What it basically says: Tally up all individual characters. The most used one gets the shortest code (at 3 bits). Then continue down until you arrived at the end. Actually, Wikipedia does a better job at that than I ever could, so here's a picture:
+[caption id="attachment_241" align="alignnone" width="600"]<a href="http://the.codepoet.ch/wp-content/uploads/2012/08/huffman.png"><img src="http://the.codepoet.ch/wp-content/uploads/2012/08/huffman.png" alt="Huffman Coding Tree" title="Huffman Coding Tree" width="1000" height="643" class="size-full wp-image-241" /></a> Huffman Coding Tree[/caption]
+(Source: http://en.wikipedia.org/wiki/File:Huffman_tree_2.svg)
+
+So that one sounded scary, turned out to be really easy!
+
+<h3>So What About That LZ77</h3>
+The next part in this tour around compression algorithms leads us right back into history. Can't we get something new going in the compression world?
+
+LZ77 was introduced in a paper in, well, 1977 by Lempel and Ziv. LZ77 is a so-called <strong>sliding window compressor</strong>. At least they came up with impressive names back then. Why sliding window? It checks the last 2, 4 or 32 kB for repeating strings. Simple as that.
+
+Should it find one such repeating string, instead of adding that string to the output stream, it puts a back marker in that basically says: If you want to finish reading that sentence, go back to page 32, line 17, and read from character 17 to character 34. That lazy bastard!
+
+<h3>Now I See How They Tie Together</h3>
+Well I hope you do! Else I failed and you should shame in the comments. :) Or of course I can try again:
+
+First, Deflate splits up the document into blocks to make working with it easier. Then (lets assume the input isn't already compressed) it runs each block through LZ77 to get all the obvious double strings out of the way. Then it sends it through a Huffman Encoding to make it even shorter. 
+
+So yes, that's deflate.
+
+<h3>What About The Others (BZIP2 Anyone?)</h3>
+Not all of them use this simple approach, because simple apparently isn't good enough. BZIP2 goes through 9 different stages.
+<ol>
+	<li>Replacing all 4 or more repeating characters with just 4 characters. (There you see, a geek had to make this algorithm for comic books! "AAAAAAAAAA!" is so much longer than "AAA\7!") So called Comic Book Encoding... Unfortunately not, it's simply called <a href="http://en.wikipedia.org/wiki/Run-length_encoding" title="Run-length Encoding">Run Length Encoding</a>. How boring!</li>
+	<li>Next they wheel around the characters. Which basically means a fancy way to sort the same letters after each other so compression is easier. The so called <a href="http://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform" title="Burros-Wheeler Transform">Burrows-Wheeler Transform</a>.</li>
+	<li>Replace all repeating characters with 0, so we have as many 0 as possible. Could also be any other character. The <a href="http://en.wikipedia.org/wiki/Move-to-front_transform" title="Move-to-front Transform">Move-to-Front Transform</a> (Yes, I hate these people too at concerts).</li>
+	<li>And again, after sorting everything possible, we do a Run-length Encoding.</li>
+	<li>Then a Huffman Encoding. Don't tell me now I have to explain what that is!</li>
+	<li>Then again we see Huffmaaa\7n! This time with multiple tables per block to make the output even shorter.</li>
+	<li>8. and 9. Add some binary trickery.</li>
+</ol>
+
+So yes, you can use a lot of other things, but it all comes back to making the output even shorter. Surprising, hu?
+
+<h3>So That's Compression</h3>
+Yes, that's compression. Use a bit of special encoding, remove duplicates, and you are halfway there. Of course, this is just for Deflate. We saw that BZIP2 is already a lot more complicated and uses a lot of different tricks to make the output even smaller, but then again, it is also slower!
+
+<em>If you liked this post, you should follow me <a href="https://twitter.com/codepoet_ch" title="Twitter">on Twitter</a> and sign up for the <a href="http://feeds.feedburner.com/TheCodePoet" title="RSS feed">RSS feed</a>!</em>
+
+<small><em>B58P3MMWCDTH</em></small>

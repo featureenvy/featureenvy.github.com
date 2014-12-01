@@ -1,7 +1,0 @@
-blog:
-  image: grahamc/jekyll
-  command: serve
-  ports:
-    - "4000:4000"
-  volumes:
-    - /Users/zumda/projects/featureenvy.github.com:/src

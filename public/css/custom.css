@@ -2,4 +2,6 @@
   transform: rotate(-90deg) translate(0, -100%);
   transform-origin: right top;
   padding-bottom: 10px;
+  overflow-x: visible;
+  float: right;
 }

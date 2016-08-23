@@ -12,3 +12,6 @@ highlighter:  pygments
 paginate:     5
 
 host: 0.0.0.0
+
+gems:
+    - jekyll-paginate

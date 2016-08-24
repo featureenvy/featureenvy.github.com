@@ -1,7 +1,47 @@
 .masthead h1 {
-  transform: rotate(-90deg) translate(0, -100%);
+  padding: 20px;
+}
+
+.masthead h1 {
+  transform: translateX(-100%) rotate(-90deg);
   transform-origin: right top;
-  padding-bottom: 10px;
-  overflow-x: visible;
-  float: right;
+  position: absolute;
+  font-size: 30px;
+}
+
+.masthead-inner {
+  padding-left: 80px;
+}
+
+@media (min-width: 990px) {
+  .masthead h1 {
+    font-size: 60px;
+  }
+
+  .container {
+    margin-left: 30%;
+  }
+}
+
+aside {
+  font-size: 14px;
+  color: #868279;
+}
+
+@media (max-width: 989px) {
+  aside {
+    padding: 10px 10px;
+    background: #faf8f5;
+    border: solid 1px #f7f4ed;
+    border-bottom: solid 1px #f0e9db;
+    border-radius: 3px;
+  }
+}
+
+@media (min-width: 990px) {
+  aside {
+    position: absolute;
+    margin-left: 57%;
+    width: 10%;
+  }
 }
